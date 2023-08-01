@@ -1,16 +1,22 @@
-import { Router } from 'express';
-import userRoute from './user.route';
+import { Router } from "express";
+import userRoute from "./user.route";
+import securityKeyRoute from "./securityKey.route";
 
 const router = Router();
 
 const defaultRoutes = [
   {
-    path: '/user',
+    path: "/user",
     route: userRoute,
+  },
+
+  {
+    path: "/securityKey",
+    route: securityKeyRoute,
   },
 ];
 
-defaultRoutes.forEach(route => {
+defaultRoutes.forEach((route) => {
   router.use(route.path, route.route);
 });
 
