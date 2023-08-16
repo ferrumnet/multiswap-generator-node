@@ -81,6 +81,7 @@ async function workerForFetchChainDataFromNetwork(tx: any) {
       await workerForSignature(job);
     } else {
       console.info(`failed!`);
+      await updateTransaction(job, null, null);
     }
   }
 }
@@ -115,6 +116,20 @@ async function workerForSignature(job: any) {
     }
 
     console.log("signedData", job.returnvalue.status, signedData);
+    await updateTransaction(job, signedData, tx);
+  } catch (error) {
+    console.error("error occured", error);
+  }
+}
+
+async function updateTransaction(job: any, signedData: any, tx: any) {
+  try {
+    console.log("signedData", job.returnvalue.status, signedData);
+    await axiosService.updateTransactionJobStatus(job?.data?.txId, {
+      signedData,
+      transaction: tx,
+      transactionReceipt: job?.returnvalue,
+    });
   } catch (error) {
     console.error("error occured", error);
   }
