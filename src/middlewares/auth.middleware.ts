@@ -11,11 +11,13 @@ const auth =
     } else {
       try {
         const token = req.headers.authorization.split(" ")[1];
-        next();
+        if (token && token == (global as any).AWS_ENVIRONMENT.API_KEY) {
+          next();
+        }
       } catch (error) {
         (global as any).log.error(error);
-        return res.http401(invalidToken);
       }
+      return res.http401(invalidToken);
     }
   };
 export default auth;
