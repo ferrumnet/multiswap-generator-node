@@ -31,13 +31,13 @@ async function start() {
 
 async function triggerJobs() {
   let transactions = await axiosService.getTransactions();
-  console.log(transactions.length);
-  if (transactions && transactions.length > 0) {
+  console.log(transactions?.length);
+  if (transactions && transactions?.length > 0) {
     isProccessRunning = true;
     for (const transaction of transactions) {
       await workerForFetchChainDataFromNetwork(transaction);
     }
-    // isProccessRunning = false;
+    isProccessRunning = false;
   }
 }
 

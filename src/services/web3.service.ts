@@ -88,7 +88,10 @@ export const signedTransaction = async (
     );
     return {
       ...txData,
-      signatures: [payBySig0.signatures, payBySig1.signatures],
+      signatures: [
+        { signature: payBySig0.signatures, hash: payBySig0.hash },
+        { signature: payBySig1.signatures, hash: payBySig1.hash },
+      ],
       hash: payBySig0.hash,
     };
   } catch (error) {
@@ -120,7 +123,7 @@ const createSignedPayment = (
     Buffer.from(privateKey.replace("0x", ""), "hex")
   );
   const sign = fixSig(toRpcSig(ecSign.v, ecSign.r, ecSign.s));
-  payBySig.signatures = [sign];
+  payBySig.signatures = sign;
   return payBySig;
 };
 
