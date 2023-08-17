@@ -60,8 +60,11 @@ export const signedTransaction = async (
 
     return {
       ...txData,
-      signatures: [payBySig.signatures, payBySig.signatures],
-      hash: "payBySig.hash",
+      signatures: [
+        { signature: payBySig.signatures, hash: payBySig.hash },
+        { signature: payBySig.signatures, hash: payBySig.hash },
+      ],
+      hash: payBySig.hash,
     };
   } catch (error) {
     console.error("Error occured while decoding transaction", error);
@@ -89,7 +92,7 @@ const createSignedPayment = async (
   const wallet = new Wallet(privateKey, provider);
   let signature = await wallet.signMessage(payBySig.hash);
   signature = signature.replace(/^0x/, "");
-  payBySig.signatures = [signature];
+  payBySig.signatures = signature;
   return payBySig;
 };
 
