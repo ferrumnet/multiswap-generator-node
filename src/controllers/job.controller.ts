@@ -1,0 +1,19 @@
+import { Request, Response } from "express";
+import { jobService } from "../services";
+
+export const createJob = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const job = await jobService.createJob(req.body);
+    res.send({ message: "success" });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const getHealth = async (req: Request, res: Response): Promise<any> => {
+  try {
+    res.send("");
+  } catch (err) {
+    console.error(err);
+  }
+};

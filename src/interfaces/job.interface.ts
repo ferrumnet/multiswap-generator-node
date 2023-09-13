@@ -1,4 +1,4 @@
-import { Transaction, TransactionReceipt } from '../interfaces';
+import { Transaction, TransactionReceipt } from "../interfaces";
 
 export interface JobRequestBody {
   name: string;
