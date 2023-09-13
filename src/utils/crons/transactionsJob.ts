@@ -36,12 +36,16 @@ async function triggerJobs() {
   if (transactions && transactions?.length > 0) {
     isProccessRunning = true;
     for (const transaction of transactions) {
-      if (isHashInLocalList(transaction.receiveTransactionId) == false) {
-        addTransactionHashInLocalList(transaction.receiveTransactionId);
-        workerForFetchChainDataFromNetwork(transaction);
-      }
+      addWorker(transaction);
     }
     isProccessRunning = false;
+  }
+}
+
+export function addWorker(transaction: any) {
+  if (isHashInLocalList(transaction.receiveTransactionId) == false) {
+    addTransactionHashInLocalList(transaction.receiveTransactionId);
+    workerForFetchChainDataFromNetwork(transaction);
   }
 }
 
