@@ -8,6 +8,7 @@ import {
 } from "./../../services/index";
 import { JobRequestBody } from "./../../interfaces/index";
 let isProccessRunning = false;
+let localTransactionHashes: any = [];
 
 let transactionsJob = async function () {
   start();
@@ -35,7 +36,10 @@ async function triggerJobs() {
   if (transactions && transactions?.length > 0) {
     isProccessRunning = true;
     for (const transaction of transactions) {
-      await workerForFetchChainDataFromNetwork(transaction);
+      if (isHashInLocalList(transaction.receiveTransactionId) == false) {
+        addTransactionHashInLocalList(transaction.receiveTransactionId);
+        workerForFetchChainDataFromNetwork(transaction);
+      }
     }
     isProccessRunning = false;
   }
@@ -130,8 +134,31 @@ async function updateTransaction(job: any, signedData: any, tx: any) {
       transaction: tx,
       transactionReceipt: job?.returnvalue,
     });
+    removeTransactionHashFromLocalList(job?.data?.txId);
   } catch (error) {
     console.error("error occured", error);
+  }
+}
+
+function addTransactionHashInLocalList(hash: any) {
+  localTransactionHashes?.push(hash);
+  console.log(localTransactionHashes?.length);
+}
+
+function removeTransactionHashFromLocalList(hash: any) {
+  localTransactionHashes = localTransactionHashes?.filter(
+    (item: string) => item !== hash
+  );
+  console.log(localTransactionHashes?.length);
+}
+
+function isHashInLocalList(hash: any): boolean {
+  const found = localTransactionHashes?.find((item: any) => item == hash);
+  console.log(found);
+  if (found) {
+    return true;
+  } else {
+    return false;
   }
 }
 
