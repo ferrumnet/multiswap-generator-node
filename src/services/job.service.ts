@@ -1,6 +1,8 @@
 import { addWorker } from "./..//utils/crons/transactionsJob";
 
 export const createJob = async (transaction: any): Promise<any> => {
-  addWorker(transaction);
+  if (transaction) {
+    addWorker(transaction);
+  }
   return null;
 };
