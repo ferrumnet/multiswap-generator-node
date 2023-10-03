@@ -7,6 +7,7 @@ import {
   NETWORKS,
   CUDOS_CHAIN_ID,
   THRESHOLD,
+  getPrivateKey,
 } from "../constants/constants";
 import { ecsign, toRpcSig } from "ethereumjs-util";
 
@@ -117,7 +118,7 @@ const createSignedPayment = (
     amount,
     salt
   );
-  const privateKey = process.env.PRIVATE_KEY as string;
+  const privateKey = getPrivateKey();
   const ecSign = ecsign(
     Buffer.from(payBySig.hash.replace("0x", ""), "hex"),
     Buffer.from(privateKey.replace("0x", ""), "hex")
