@@ -5,8 +5,9 @@ var CryptoJS = require("crypto-js");
 export const NAME = "FERRUM_TOKEN_BRIDGE_POOL";
 export const VERSION = "000.004";
 export const CUDOS_CHAIN_ID = "cudos-1";
-let SECURITY_KEY = "";
+export let SECURITY_KEY = "";
 export const THRESHOLD = 10;
+export const BEARER = "Bearer ";
 
 export const getSecurityKey = function () {
   return SECURITY_KEY;
@@ -16,8 +17,13 @@ export const setSecurityKey = function (securityKey: string) {
   SECURITY_KEY = securityKey;
 };
 
-export const createAuthToken = async function () {
-  let timelapse = 5;
+export const getPrivateKey = function () {
+  const privateKey = process.env.PRIVATE_KEY as string;
+  return decrypt(privateKey, SECURITY_KEY);
+};
+
+export const createAuthTokenForMultiswapBackend = function () {
+  let timelapse = 1;
   let currentTime = new Date();
   let startDateTime = moment(currentTime)
     .subtract("minutes", timelapse)
@@ -28,27 +34,36 @@ export const createAuthToken = async function () {
     .utc()
     .format();
   let randomKey = crypto.randomBytes(512).toString("hex");
-  let apiKey = (global as any).environment.apiKeyForGateway;
   let tokenBody: any = {};
   tokenBody.startDateTime = startDateTime;
   tokenBody.endDateTime = endDateTime;
   tokenBody.randomKey = randomKey;
-  tokenBody.apiKey = apiKey;
 
   let strTokenBody = JSON.stringify(tokenBody);
-  let encryptedSessionToken = encryptApiKey(strTokenBody);
+  let encryptedSessionToken = encrypt(
+    strTokenBody,
+    (global as any).AWS_ENVIRONMENT.API_KEY
+  );
   return encryptedSessionToken;
 };
 
-export const encryptApiKey = function (data: any) {
+export const encrypt = function (data: string, key: String) {
   try {
-    var ciphertext = CryptoJS.AES.encrypt(
-      data,
-      (global as any).AWS_ENVIRONMENT.SECRET_KEY
-    ).toString();
+    var ciphertext = CryptoJS.AES.encrypt(data, key).toString();
     return ciphertext;
   } catch (e) {
     console.log(e);
+    return "";
+  }
+};
+
+export const decrypt = function (data: string, key: string) {
+  try {
+    var bytes = CryptoJS.AES.decrypt(data, key);
+    var originalText = bytes.toString(CryptoJS.enc.Utf8);
+    return originalText;
+  } catch (e) {
+    console.log("decrypt error", e);
     return "";
   }
 };
