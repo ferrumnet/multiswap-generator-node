@@ -64,10 +64,7 @@ export const signedTransaction = async (
 
     return {
       ...txData,
-      signatures: [
-        { signature: payBySig.signatures, hash: payBySig.hash },
-        { signature: payBySig.signatures, hash: payBySig.hash },
-      ],
+      signatures: [{ signature: payBySig.signatures, hash: payBySig.hash }],
       hash: payBySig.hash,
     };
   } catch (error) {

@@ -15,7 +15,7 @@ export let getTransactions = async function () {
         Authorization: BEARER + createAuthTokenForMultiswapBackend(),
       },
     };
-    let url = `${baseUrl}/api/v1/transactions/list?status=swapPending&isPagination=false&isFrom=generator`;
+    let url = `${baseUrl}/api/v1/transactions/list?status=swapPending&limit=20&isFrom=generator`;
     let res = await axios.get(url, config);
     return res.data.body.transactions;
   } catch (error) {
