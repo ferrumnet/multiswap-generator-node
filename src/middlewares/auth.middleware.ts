@@ -35,8 +35,10 @@ function validateAuth(token: string, req: any): boolean {
 function authSecurityKeyApis(token: string): boolean {
   if (
     token &&
-    decrypt(token, (global as any).AWS_ENVIRONMENT.API_KEY) ==
-      (global as any).AWS_ENVIRONMENT.API_KEY
+    decrypt(
+      token,
+      (global as any).AWS_ENVIRONMENT.SECURITY_ROUTER_AUTHORIZATION_KEY
+    ) == (global as any).AWS_ENVIRONMENT.SECURITY_ROUTER_AUTHORIZATION_KEY
   ) {
     return true;
   }
