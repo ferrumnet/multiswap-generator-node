@@ -9,6 +9,12 @@ export interface JobRequestBody {
   bridgeAmount: string;
   txId: string;
   threshold: number;
+  sourceAssetType: string;
+  destinationAssetType: string;
+  destinationAmountIn: string;
+  destinationAmountOut: string;
+  sourceOneInchData: string;
+  destinationOneInchData: string;
 }
 
 export interface UpdateJobRequestBody {

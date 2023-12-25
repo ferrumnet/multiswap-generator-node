@@ -24,7 +24,7 @@ export let getTransactions = async function () {
   }
 };
 
-export const updateTransactionJobStatus = async (txHash: string, body: any) => {
+export const updateTransaction = async (txHash: string, body: any) => {
   let baseUrl = (global as any as any).AWS_ENVIRONMENT
     .BASE_URL_MULTISWAP_BACKEND;
   if (process.env.ENVIRONMENT == "local") {
@@ -36,7 +36,7 @@ export const updateTransactionJobStatus = async (txHash: string, body: any) => {
     },
   };
   return axios.put(
-    `${baseUrl}/api/v2/transactions/update/swap/and/withdraw/job/${txHash}?isFrom=generator`,
+    `${baseUrl}/api/v1/transactions/update/from/generator/${txHash}`,
     body,
     config
   );

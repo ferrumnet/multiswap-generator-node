@@ -2,24 +2,21 @@ import Web3 from "web3";
 import { TransactionReceipt, Transaction } from "../interfaces";
 const { SigningCosmWasmClient } = require("@cosmjs/cosmwasm-stargate");
 import { Wallet, ethers } from "ethers";
-import {
-  CUDOS_CHAIN_ID,
-  THRESHOLD,
-  getPrivateKey,
-} from "../constants/constants";
+import { CUDOS_CHAIN_ID, getPrivateKey } from "../constants/constants";
 
 export const getTransactionReceipt = async (
   txId: string,
   rpcURL: string,
+  threshold = 0,
   tries = 0
 ): Promise<TransactionReceipt> => {
   let client = await SigningCosmWasmClient.connectWithSigner(rpcURL);
   const transaction = await client.getTx(txId);
   console.log("transaction status", transaction?.code);
-  if (tries < THRESHOLD) {
+  if (tries < threshold) {
     tries += 1;
     if (!transaction || transaction === null) {
-      await getTransactionReceipt(txId, rpcURL, tries);
+      await getTransactionReceipt(txId, rpcURL, threshold, tries);
     }
   }
   if (transaction && transaction.code == 0) {

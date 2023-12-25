@@ -2,16 +2,18 @@ import moment from "moment";
 var crypto = require("crypto");
 var CryptoJS = require("crypto-js");
 
-export const NAME = "FERRUM_TOKEN_BRIDGE_POOL";
+export const NAME = "FUND_MANAGER";
 export const VERSION = "000.004";
 export const CUDOS_CHAIN_ID = "cudos-1";
+export const FOUNDARY = "Foundary";
+export const ONE_INCH = "1Inch";
 export let SECURITY_KEY = "";
 export const BEARER = "Bearer ";
 export const NETWORKS = [
   {
     chainId: "56",
-    fundManagerAddress: "0x6EBED6276033A33b6C6d60e515BF18E979976668",
-    fiberRouterAddress: "0xd66C6a8277B4E258b4B6023F5B4085af00AfA9bB",
+    fundManagerAddress: "0xd9B93DCAbaa1e68c1E8cc6c84d44e76040F78973",
+    fiberRouterAddress: "0x5d79f457789c601d30de7171861b15ebfb097360",
     foundaryTokenAddress: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   },
   {
@@ -22,8 +24,8 @@ export const NETWORKS = [
   },
   {
     chainId: "137",
-    fundManagerAddress: "0xe54B5835e8aba22D52BF892b23Bb491E0bB1b579",
-    fiberRouterAddress: "0x704D29c86fD1347446c5F30f80E77B31Dc67539f",
+    fundManagerAddress: "0x1c0E4e27871162d350Ef66c275DFb02ca359f013",
+    fiberRouterAddress: "0xffbf08c340d9c27aba8045eabfb88058d9c2f426",
     foundaryTokenAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   },
   {
@@ -113,4 +115,8 @@ export const delay = function () {
 
 export const getThreshold = function (threshold: number) {
   return threshold * 2;
+};
+
+export const getExipry = function () {
+  return moment().utc().add("week", 1).unix();
 };

@@ -17,7 +17,7 @@ let transactionsJob = async function () {
 
 async function start() {
   try {
-    let task = cron.schedule("*/20 * * * * *", async () => {
+    let task = cron.schedule("*/10 * * * * *", async () => {
       console.log(moment().utc(), ":::");
       if (!isProccessRunning) {
         console.log("getTransaction cron triggered:::");
@@ -37,20 +37,20 @@ async function triggerJobs() {
   if (transactions && transactions?.length > 0) {
     isProccessRunning = true;
     for (const transaction of transactions) {
-      addWorker(transaction);
+      handleJob(transaction);
     }
     isProccessRunning = false;
   }
 }
 
-export function addWorker(transaction: any) {
+export function handleJob(transaction: any) {
   if (isHashInLocalList(transaction.receiveTransactionId) == false) {
     addTransactionHashInLocalList(transaction.receiveTransactionId);
-    workerForFetchChainDataFromNetwork(transaction);
+    fetchChainDataFromNetwork(transaction);
   }
 }
 
-async function workerForFetchChainDataFromNetwork(tx: any) {
+async function fetchChainDataFromNetwork(tx: any) {
   if (tx) {
     let sourceNetwork = tx.sourceNetwork;
     let destinationNetwork = tx.destinationNetwork;
@@ -67,20 +67,23 @@ async function workerForFetchChainDataFromNetwork(tx: any) {
       bridgeAmount: tx.bridgeAmount,
       txId: tx.receiveTransactionId,
       threshold: sourceNetwork.threshold,
+      sourceAssetType: tx.sourceAssetType,
+      destinationAssetType: tx.destinationAssetType,
+      destinationAmountIn: tx.destinationAmountIn,
+      destinationAmountOut: tx.destinationAmountOut,
+      sourceOneInchData: tx.sourceOneInchData,
+      destinationOneInchData: tx.destinationOneInchData,
     };
 
     let job: any = { data: data };
 
     if (job.data.isSourceNonEVM) {
-      console.log("======================");
-      console.log("source is Non EVM");
-      job.returnvalue = await cosmWasmService.getTransactionReceipt(
-        job.data.txId,
-        job.data.sourceRpcURL
-      );
+      // job.returnvalue = await cosmWasmService.getTransactionReceipt(
+      //   job.data.txId,
+      //   job.data.sourceRpcURL
+      // );
     } else {
-      console.log("======================");
-      console.log("source is EVM");
+      console.log("====================== source is EVM");
       job.returnvalue = await web3Service.getTransactionReceipt(
         job.data.txId,
         job.data.sourceRpcURL,
@@ -89,7 +92,7 @@ async function workerForFetchChainDataFromNetwork(tx: any) {
     }
 
     if (job?.returnvalue?.status == true) {
-      await workerForSignature(job);
+      await createSignature(job);
     } else {
       console.info(`failed!`);
       await updateTransaction(job, null, null);
@@ -97,31 +100,31 @@ async function workerForFetchChainDataFromNetwork(tx: any) {
   }
 }
 
-async function workerForSignature(job: any) {
+async function createSignature(job: any) {
   try {
     let decodedData;
     let tx: any = {};
     let signedData;
-    console.info(`completed!`);
+
     if (job.data.isSourceNonEVM != null && job.data.isSourceNonEVM) {
-      decodedData = cosmWasmService.getLogsFromTransactionReceipt(job);
-      tx.from = decodedData.from;
-      tx.hash = job.returnvalue.transactionHash;
+      // decodedData = cosmWasmService.getLogsFromTransactionReceipt(job);
+      // tx.from = decodedData.from;
+      // tx.hash = job.returnvalue.transactionHash;
     } else {
       decodedData = web3Service.getLogsFromTransactionReceipt(job);
+      console.log("decodedData", decodedData);
       tx = await web3Service.getTransactionByHash(
         job.data.txId,
         job.data.sourceRpcURL
       );
     }
-    console.info("decodedData", decodedData);
 
     if (job.data.isDestinationNonEVM != null && job.data.isDestinationNonEVM) {
-      signedData = await cosmWasmService.signedTransaction(
-        job,
-        decodedData,
-        tx
-      );
+      // signedData = await cosmWasmService.signedTransaction(
+      //   job,
+      //   decodedData,
+      //   tx
+      // );
     } else {
       signedData = await web3Service.signedTransaction(job, decodedData, tx);
     }
@@ -136,7 +139,7 @@ async function workerForSignature(job: any) {
 async function updateTransaction(job: any, signedData: any, tx: any) {
   try {
     console.log("signedData", job.returnvalue.status, signedData);
-    await axiosService.updateTransactionJobStatus(job?.data?.txId, {
+    await axiosService.updateTransaction(job?.data?.txId, {
       signedData,
       transaction: tx,
       transactionReceipt: job?.returnvalue,
