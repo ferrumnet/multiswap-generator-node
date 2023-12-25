@@ -6,14 +6,15 @@ import {
   VERSION,
   NETWORKS,
   CUDOS_CHAIN_ID,
-  THRESHOLD,
   getPrivateKey,
+  delay,
 } from "../constants/constants";
 import { ecsign, toRpcSig } from "ethereumjs-util";
 
 export const getTransactionReceipt = async (
   txId: string,
   rpcURL: string,
+  threshold: number,
   tries = 0
 ): Promise<TransactionReceipt> => {
   const web3 = new Web3(rpcURL);
@@ -21,10 +22,11 @@ export const getTransactionReceipt = async (
     txId
   );
   console.log("transaction", transaction?.status, txId, tries);
-  if (tries < THRESHOLD) {
+  if (tries < threshold) {
     tries += 1;
     if (!transaction || transaction === null || transaction.status === null) {
-      await getTransactionReceipt(txId, rpcURL, tries);
+      await delay();
+      await getTransactionReceipt(txId, rpcURL, threshold, tries);
     }
   }
   return transaction;
@@ -51,7 +53,9 @@ export const signedTransaction = async (
       from: transaction.from,
       token: decodedData.sourceToken,
       amount: decodedData.sourceAmount,
-      contractAddress: getFundManagerAddress(decodedData.targetChainId),
+      fundManagerContractAddress: getFundManagerAddress(
+        decodedData.targetChainId
+      ),
       fiberRouterAddress: getFiberRouterAddress(decodedData.targetChainId),
       chainId: decodedData.sourceChainId,
       targetChainId: decodedData.targetChainId,
@@ -68,32 +72,20 @@ export const signedTransaction = async (
     txData.salt = Web3.utils.keccak256(
       txData.transactionHash.toLocaleLowerCase()
     );
-    const payBySig0 = createSignedPayment(
+    const payBySig = createSignedPayment(
       txData.targetChainId,
       txData.targetAddress,
       destinationAmountToMachine,
       txData.targetToken,
-      txData.contractAddress,
+      txData.fundManagerContractAddress,
       txData.salt,
       web3
     );
 
-    const payBySig1 = createSignedPayment(
-      txData.targetChainId,
-      txData.fiberRouterAddress,
-      destinationAmountToMachine,
-      txData.targetToken,
-      txData.contractAddress,
-      txData.salt,
-      web3
-    );
     return {
       ...txData,
-      signatures: [
-        { signature: payBySig0.signatures, hash: payBySig0.hash },
-        { signature: payBySig1.signatures, hash: payBySig1.hash },
-      ],
-      hash: payBySig0.hash,
+      signatures: [{ signature: payBySig.signatures, hash: payBySig.hash }],
+      hash: payBySig.hash,
     };
   } catch (error) {
     console.error("Error occured while decoding transaction", error);

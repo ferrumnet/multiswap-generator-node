@@ -7,6 +7,7 @@ import {
   cosmWasmService,
 } from "./../../services/index";
 import { JobRequestBody } from "./../../interfaces/index";
+import { getThreshold } from "../../constants/constants";
 let isProccessRunning = false;
 let localTransactionHashes: any = [];
 
@@ -65,6 +66,7 @@ async function workerForFetchChainDataFromNetwork(tx: any) {
       isDestinationNonEVM: destinationNetwork.isNonEVM,
       bridgeAmount: tx.bridgeAmount,
       txId: tx.receiveTransactionId,
+      threshold: sourceNetwork.threshold,
     };
 
     let job: any = { data: data };
@@ -81,7 +83,8 @@ async function workerForFetchChainDataFromNetwork(tx: any) {
       console.log("source is EVM");
       job.returnvalue = await web3Service.getTransactionReceipt(
         job.data.txId,
-        job.data.sourceRpcURL
+        job.data.sourceRpcURL,
+        getThreshold(job.data.threshold)
       );
     }
 
