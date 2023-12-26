@@ -26,6 +26,7 @@ export async function fetchChainDataFromNetwork(tx: any) {
       destinationAmountOut: tx.destinationAmountOut,
       sourceOneInchData: tx.sourceOneInchData,
       destinationOneInchData: tx.destinationOneInchData,
+      targetToken: tx.destinationCabn.tokenContractAddress,
     };
 
     let job: any = { data: data };

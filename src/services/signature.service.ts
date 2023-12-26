@@ -35,7 +35,7 @@ export const getDataForSignature = (
     ),
     chainId: decodedData.sourceChainId,
     targetChainId: decodedData.targetChainId,
-    targetToken: decodedData.targetToken,
+    targetToken: job.data.targetToken,
     targetFoundaryToken: web3Service.getFoundaryTokenAddress(
       decodedData.sourceChainId,
       decodedData.targetChainId,
@@ -50,6 +50,7 @@ export const getDataForSignature = (
     destinationAmountOut: withdrawalData?.destinationAmountOut,
     sourceOneInchData: withdrawalData?.sourceOneInchData,
     destinationOneInchData: withdrawalData?.destinationOneInchData,
+    withdrawalData: decodedData.withdrawlData,
     expiry: getExipry(),
   };
   return txData;
@@ -192,7 +193,7 @@ export const produceOneInchHash = (
 ): any => {
   const methodHash = Web3.utils.keccak256(
     Web3.utils.utf8ToHex(
-      "WithdrawSignedOneInch(address to,uint256 amountIn,uint256 amountOut,address foundryToken,address targetToken, bytes oneInchData, bytes32 salt, uint256 expiry)"
+      "WithdrawSignedOneInch(address to,uint256 amountIn,uint256 amountOut,address foundryToken,address targetToken,bytes oneInchData,bytes32 salt,uint256 expiry)"
     )
   );
   const params = [

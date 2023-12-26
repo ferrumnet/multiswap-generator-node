@@ -15,6 +15,7 @@ export interface JobRequestBody {
   destinationAmountOut: string;
   sourceOneInchData: string;
   destinationOneInchData: string;
+  targetToken: string;
 }
 
 export interface UpdateJobRequestBody {
