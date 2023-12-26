@@ -1,15 +1,8 @@
 import Web3 from "web3";
 import { TransactionReceipt, Transaction } from "../interfaces";
+import { signatureService } from "./index";
 import { abi as contractABI } from "../constants/FiberRouter.json";
-import {
-  NAME,
-  VERSION,
-  NETWORKS,
-  CUDOS_CHAIN_ID,
-  getPrivateKey,
-  delay,
-} from "../constants/constants";
-import { ecsign, toRpcSig } from "ethereumjs-util";
+import { NETWORKS, CUDOS_CHAIN_ID, delay } from "../constants/constants";
 
 export const getTransactionReceipt = async (
   txId: string,
@@ -47,137 +40,45 @@ export const signedTransaction = async (
 ): Promise<any> => {
   try {
     const web3 = new Web3(job.data.sourceRpcURL);
-    const destinationAmountToMachine = await getDestinationAmount(job.data);
-    const txData = {
-      transactionHash: job.returnvalue.transactionHash,
-      from: transaction.from,
-      token: decodedData.sourceToken,
-      amount: decodedData.sourceAmount,
-      fundManagerContractAddress: getFundManagerAddress(
-        decodedData.targetChainId
-      ),
-      fiberRouterAddress: getFiberRouterAddress(decodedData.targetChainId),
-      chainId: decodedData.sourceChainId,
-      targetChainId: decodedData.targetChainId,
-      targetToken: getFoundaryTokenAddress(
-        decodedData.sourceChainId,
-        decodedData.targetChainId,
-        decodedData.targetToken
-      ),
-      targetAddress: decodedData.targetAddress,
-      signatures: [],
-      salt: "",
-    };
+    const destinationAmountToMachine = await getDestinationAmount(decodedData);
+    let txData = await signatureService.getDataForSignature(
+      job,
+      decodedData,
+      transaction
+    );
 
     txData.salt = Web3.utils.keccak256(
       txData.transactionHash.toLocaleLowerCase()
     );
-    const payBySig = createSignedPayment(
+
+    const signature = signatureService.createSignedPayment(
       txData.targetChainId,
       txData.targetAddress,
       destinationAmountToMachine,
       txData.targetToken,
       txData.fundManagerContractAddress,
       txData.salt,
+      txData.destinationAssetType,
+      txData.destinationAmountIn,
+      txData.destinationAmountOut,
+      txData.targetFoundaryToken,
+      txData.destinationOneInchData,
+      txData.expiry,
       web3
     );
 
     return {
       ...txData,
-      signatures: [{ signature: payBySig.signatures, hash: payBySig.hash }],
-      hash: payBySig.hash,
+      signatures: [
+        {
+          signature: signature.signature,
+          hash: signature.hash,
+        },
+      ],
     };
   } catch (error) {
     console.error("Error occured while decoding transaction", error);
   }
-};
-
-const createSignedPayment = (
-  chainId: string,
-  address: string,
-  amount: string,
-  token: string,
-  contractAddress: string,
-  salt: string,
-  web3: Web3
-) => {
-  const payBySig = produceSignatureWithdrawHash(
-    web3,
-    chainId,
-    contractAddress,
-    token,
-    address,
-    amount,
-    salt
-  );
-  const privateKey = getPrivateKey();
-  const ecSign = ecsign(
-    Buffer.from(payBySig.hash.replace("0x", ""), "hex"),
-    Buffer.from(privateKey.replace("0x", ""), "hex")
-  );
-  const sign = fixSig(toRpcSig(ecSign.v, ecSign.r, ecSign.s));
-  payBySig.signatures = sign;
-  return payBySig;
-};
-
-const produceSignatureWithdrawHash = (
-  web3: Web3,
-  chainId: string,
-  contractAddress: string,
-  token: string,
-  payee: string,
-  amount: string,
-  swapTxId: string
-): any => {
-  const methodHash = Web3.utils.keccak256(
-    Web3.utils.utf8ToHex(
-      "WithdrawSigned(address token,address payee,uint256 amount,bytes32 salt)"
-    )
-  );
-  const params = ["bytes32", "address", "address", "uint256", "bytes32"];
-  const structure = web3.eth.abi.encodeParameters(params, [
-    methodHash,
-    token,
-    payee,
-    amount,
-    swapTxId,
-  ]);
-  const structureHash = Web3.utils.keccak256(structure);
-  const ds = domainSeparator(web3, chainId, contractAddress);
-  const hash = Web3.utils.soliditySha3("\x19\x01", ds, structureHash);
-  return {
-    contractName: NAME,
-    contractVersion: VERSION,
-    contractAddress: contractAddress,
-    amount,
-    payee,
-    signatures: [],
-    token,
-    swapTxId,
-    sourceChainId: 0,
-    toToken: "",
-    hash,
-  };
-};
-
-const domainSeparator = (
-  web3: Web3,
-  chainId: string,
-  contractAddress: string
-) => {
-  const hashedName = Web3.utils.keccak256(Web3.utils.utf8ToHex(NAME));
-  const hashedVersion = Web3.utils.keccak256(Web3.utils.utf8ToHex(VERSION));
-  const typeHash = Web3.utils.keccak256(
-    Web3.utils.utf8ToHex(
-      "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-    )
-  );
-  return Web3.utils.keccak256(
-    web3.eth.abi.encodeParameters(
-      ["bytes32", "bytes32", "bytes32", "uint256", "address"],
-      [typeHash, hashedName, hashedVersion, chainId, contractAddress]
-    )
-  );
 };
 
 export const getLogsFromTransactionReceipt = (job: any) => {
@@ -223,7 +124,7 @@ export const getLogsFromTransactionReceipt = (job: any) => {
 
 const findSwapEvent = (topics: any[], job: any) => {
   let swapEventHash = Web3.utils.sha3(
-    "Swap(address,address,uint256,uint256,uint256,address,address)"
+    "Swap(address,address,uint256,uint256,uint256,address,address,uint256,bytes32)"
   );
   if (job.data.isDestinationNonEVM != null && job.data.isDestinationNonEVM) {
     swapEventHash = Web3.utils.sha3(
@@ -238,18 +139,7 @@ const findSwapEvent = (topics: any[], job: any) => {
   }
 };
 
-const fixSig = (sig: any) => {
-  const rs = sig.substring(0, sig.length - 2);
-  let v = sig.substring(sig.length - 2);
-  if (v === "00" || v === "37" || v === "25") {
-    v = "1b";
-  } else if (v === "01" || v === "38" || v === "26") {
-    v = "1c";
-  }
-  return rs + v;
-};
-
-const getFundManagerAddress = (chainId: string) => {
+export const getFundManagerAddress = (chainId: string) => {
   if (NETWORKS && NETWORKS.length > 0) {
     let item = NETWORKS.find((item: any) => item.chainId === chainId);
     return item ? item.fundManagerAddress : "";
@@ -257,7 +147,7 @@ const getFundManagerAddress = (chainId: string) => {
   return "";
 };
 
-const getFiberRouterAddress = (chainId: string) => {
+export const getFiberRouterAddress = (chainId: string) => {
   if (NETWORKS && NETWORKS.length > 0) {
     let item = NETWORKS.find((item: any) => item.chainId === chainId);
     return item ? item.fiberRouterAddress : "";
@@ -265,7 +155,7 @@ const getFiberRouterAddress = (chainId: string) => {
   return "";
 };
 
-const getFoundaryTokenAddress = (
+export const getFoundaryTokenAddress = (
   sourceChainId: string,
   targetChainId: string,
   targetAddress: string
