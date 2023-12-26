@@ -49,16 +49,15 @@ export const NETWORKS = [
 ];
 
 export const getSecurityKey = function () {
-  return SECURITY_KEY;
-};
-
-export const setSecurityKey = function (securityKey: string) {
-  SECURITY_KEY = securityKey;
+  return (
+    (global as any).AWS_ENVIRONMENT.SECURITY_KEY + process.env.SECURITY_KEY
+  );
 };
 
 export const getPrivateKey = function () {
   const privateKey = process.env.PRIVATE_KEY as string;
-  return decrypt(privateKey, SECURITY_KEY);
+  const securityKey = getSecurityKey();
+  return decrypt(privateKey, securityKey);
 };
 
 export const createAuthTokenForMultiswapBackend = function () {
