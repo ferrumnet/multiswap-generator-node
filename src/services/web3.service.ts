@@ -2,7 +2,7 @@ import Web3 from "web3";
 import { TransactionReceipt, Transaction } from "../interfaces";
 import { signatureService } from "./index";
 import { abi as contractABI } from "../constants/FiberRouter.json";
-import { NETWORKS, CUDOS_CHAIN_ID, delay } from "../constants/constants";
+import { NETWORKS, CUDOS_CHAIN_ID } from "../constants/constants";
 import { rpcNodeService } from "../services/index";
 
 export const getTransactionReceipt = async (
@@ -19,7 +19,9 @@ export const getTransactionReceipt = async (
   if (tries < threshold) {
     tries += 1;
     if (!transaction || transaction === null || transaction.status === null) {
+      console.log("i am here 1");
       await delay();
+      console.log("i am here 2");
       await getTransactionReceipt(txId, chainId, threshold, tries);
     }
   }
@@ -179,3 +181,5 @@ const getDestinationAmount = async (data: any) => {
   console.log("data.bridgeAmount", data.swapBridgeAmount);
   return data.swapBridgeAmount;
 };
+
+const delay = () => new Promise((res) => setTimeout(res, 30000));

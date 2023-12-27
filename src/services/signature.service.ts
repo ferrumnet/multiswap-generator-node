@@ -8,7 +8,6 @@ import {
   FOUNDARY,
   ONE_INCH,
   getPrivateKey,
-  delay,
   getExipry,
 } from "../constants/constants";
 import { ecsign, toRpcSig } from "ethereumjs-util";
