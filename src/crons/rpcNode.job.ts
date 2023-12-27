@@ -1,16 +1,17 @@
 export {};
 var cron = require("node-cron");
 import moment from "moment";
-import { axiosService, rpcNodeService } from "../../services/index";
+import { axiosService, rpcNodeService } from "../services/index";
+import { RpcNode } from "../interfaces/index";
 
-let rpcNodeJob = async function () {
+export let rpcNodeJob = async function () {
   start();
 };
 
 async function start() {
   try {
     let task = cron.schedule("*/10 * * * * *", async () => {
-      console.log(moment().utc(), ":::");
+      console.log(moment().utc(), "::: crone");
       triggerJobs();
     });
 
@@ -22,11 +23,11 @@ async function start() {
 
 async function triggerJobs() {
   let data = await axiosService.getRpcNodes();
-  console.log(data?.length);
+  console.log("rpc nodes", data?.length);
   handleJob(data);
 }
 
-export function handleJob(data: any) {
+export function handleJob(data: [RpcNode]) {
   rpcNodeService.saveRpcNodes(data);
 }
 export default rpcNodeJob;

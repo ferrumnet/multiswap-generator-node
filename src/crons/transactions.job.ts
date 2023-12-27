@@ -1,19 +1,23 @@
 export {};
 var cron = require("node-cron");
 import moment from "moment";
-import { axiosService, transactionService } from "./../services/index";
+import {
+  axiosService,
+  transactionService,
+  rpcNodeService,
+} from "../services/index";
 let isProccessRunning = false;
 let localTransactionHashes: any = [];
 
-let transactionsJob = async function () {
+export let transactionsJob = async function () {
   start();
 };
 
 async function start() {
   try {
     let task = cron.schedule("*/10 * * * * *", async () => {
-      console.log(moment().utc(), ":::");
-      if (!isProccessRunning) {
+      console.log(moment().utc(), "::: transaction");
+      if (!isProccessRunning && rpcNodeService.getRpcNodesData()?.length > 0) {
         console.log("getTransaction cron triggered:::");
         triggerJobs();
       }

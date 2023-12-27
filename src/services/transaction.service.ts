@@ -1,5 +1,5 @@
 import { axiosService, web3Service } from "./index";
-import { removeTransactionHashFromLocalList } from "../crons/transactionsJob";
+import { removeTransactionHashFromLocalList } from "../crons/transactions.job";
 import { JobRequestBody } from "../interfaces/index";
 import { getThreshold } from "../constants/constants";
 
@@ -27,6 +27,8 @@ export async function fetchChainDataFromNetwork(tx: any) {
       sourceOneInchData: tx.sourceOneInchData,
       destinationOneInchData: tx.destinationOneInchData,
       targetToken: tx.destinationCabn.tokenContractAddress,
+      courceChainId: sourceNetwork.chainId,
+      destinationChaibId: destinationNetwork.chainId,
     };
 
     let job: any = { data: data };
@@ -39,7 +41,7 @@ export async function fetchChainDataFromNetwork(tx: any) {
       console.log("====================== source is EVM");
       job.returnvalue = await web3Service.getTransactionReceipt(
         job.data.txId,
-        job.data.sourceRpcURL,
+        job.data.sourceChainId,
         getThreshold(job.data.threshold)
       );
     }

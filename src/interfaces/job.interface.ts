@@ -16,9 +16,16 @@ export interface JobRequestBody {
   sourceOneInchData: string;
   destinationOneInchData: string;
   targetToken: string;
+  courceChainId: string;
+  destinationChaibId: string;
 }
 
 export interface UpdateJobRequestBody {
   transaction: Transaction;
   transactionReceipt: TransactionReceipt;
+}
+
+export interface RpcNode {
+  url: string;
+  chainId: string;
 }

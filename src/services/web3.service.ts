@@ -3,14 +3,15 @@ import { TransactionReceipt, Transaction } from "../interfaces";
 import { signatureService } from "./index";
 import { abi as contractABI } from "../constants/FiberRouter.json";
 import { NETWORKS, CUDOS_CHAIN_ID, delay } from "../constants/constants";
+import { rpcNodeService } from "../services/index";
 
 export const getTransactionReceipt = async (
   txId: string,
-  rpcURL: string,
+  chainId: string,
   threshold: number,
   tries = 0
 ): Promise<TransactionReceipt> => {
-  const web3 = new Web3(rpcURL);
+  const web3 = new Web3(rpcNodeService.getRpcNodeByChainId(chainId).url);
   const transaction: TransactionReceipt = await web3.eth.getTransactionReceipt(
     txId
   );
@@ -19,7 +20,7 @@ export const getTransactionReceipt = async (
     tries += 1;
     if (!transaction || transaction === null || transaction.status === null) {
       await delay();
-      await getTransactionReceipt(txId, rpcURL, threshold, tries);
+      await getTransactionReceipt(txId, chainId, threshold, tries);
     }
   }
   return transaction;

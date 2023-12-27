@@ -54,7 +54,9 @@ export let getRpcNodes = async function () {
         Authorization: BEARER + createAuthTokenForMultiswapBackend(),
       },
     };
-    let url = `${baseUrl}/api/v1/rpcNodes/list?address=${(global as any as any).AWS_ENVIRONMENT.PUBLIC_ADDRESS}&type=generator&isPagination=false`;
+    let url = `${baseUrl}/api/v1/rpcNodes/list?address=${
+      (global as any as any).AWS_ENVIRONMENT.PUBLIC_KEY
+    }&type=generator&isPagination=false`;
     let res = await axios.get(url, config);
     return res.data.body.data;
   } catch (error) {
