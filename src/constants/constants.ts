@@ -1,4 +1,5 @@
 import moment from "moment";
+import { RpcNode } from "../interfaces/index";
 var crypto = require("crypto");
 var CryptoJS = require("crypto-js");
 
@@ -9,6 +10,7 @@ export const FOUNDARY = "Foundary";
 export const ONE_INCH = "1Inch";
 export let SECURITY_KEY = "";
 export const BEARER = "Bearer ";
+let rpcNodes: [RpcNode];
 export const NETWORKS = [
   {
     chainId: "56",
@@ -118,4 +120,12 @@ export const getThreshold = function (threshold: number) {
 
 export const getExipry = function () {
   return moment().utc().add("week", 1).unix();
+};
+
+export const setRpcNodesData = function (data: [RpcNode]) {
+  rpcNodes = data;
+};
+
+export const getRpcNodesData = function () {
+  return rpcNodes;
 };

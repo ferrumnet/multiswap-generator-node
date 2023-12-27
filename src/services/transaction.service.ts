@@ -13,7 +13,6 @@ export async function fetchChainDataFromNetwork(tx: any) {
 
     let data: JobRequestBody = {
       name: "",
-      sourceRpcURL: sourceRpc,
       isSourceNonEVM: sourceNetwork.isNonEVM,
       destinationRpcURL: destinationRpc,
       isDestinationNonEVM: destinationNetwork.isNonEVM,
@@ -27,7 +26,7 @@ export async function fetchChainDataFromNetwork(tx: any) {
       sourceOneInchData: tx.sourceOneInchData,
       destinationOneInchData: tx.destinationOneInchData,
       targetToken: tx.destinationCabn.tokenContractAddress,
-      courceChainId: sourceNetwork.chainId,
+      sourceChainId: sourceNetwork.chainId,
       destinationChaibId: destinationNetwork.chainId,
     };
 
@@ -70,7 +69,7 @@ async function createSignature(job: any) {
       console.log("decodedData", decodedData);
       tx = await web3Service.getTransactionByHash(
         job.data.txId,
-        job.data.sourceRpcURL
+        job.data.sourceChainId
       );
     }
 

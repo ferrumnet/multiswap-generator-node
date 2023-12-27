@@ -15,7 +15,9 @@ export let getTransactions = async function () {
         Authorization: BEARER + createAuthTokenForMultiswapBackend(),
       },
     };
-    let url = `${baseUrl}/api/v1/transactions/list?status=swapPending&limit=20&nodeType=generator`;
+    let url = `${baseUrl}/api/v1/transactions/list?status=swapPending&limit=20&nodeType=generator&address=${
+      (global as any).AWS_ENVIRONMENT.PUBLIC_KEY
+    }`;
     let res = await axios.get(url, config);
     return res.data.body.transactions;
   } catch (error) {
@@ -36,7 +38,9 @@ export const updateTransaction = async (txHash: string, body: any) => {
     },
   };
   return axios.put(
-    `${baseUrl}/api/v1/transactions/update/from/generator/${txHash}`,
+    `${baseUrl}/api/v1/transactions/update/from/generator/${txHash}?address=${
+      (global as any as any).AWS_ENVIRONMENT.PUBLIC_KEY
+    }`,
     body,
     config
   );

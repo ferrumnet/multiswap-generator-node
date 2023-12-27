@@ -28,9 +28,9 @@ export const getTransactionReceipt = async (
 
 export const getTransactionByHash = async (
   txHash: string,
-  rpcURL: string
+  chainId: string
 ): Promise<Transaction> => {
-  const web3 = new Web3(rpcURL);
+  const web3 = new Web3(rpcNodeService.getRpcNodeByChainId(chainId).url);
   return web3.eth.getTransaction(txHash);
 };
 
@@ -40,7 +40,9 @@ export const signedTransaction = async (
   transaction: any
 ): Promise<any> => {
   try {
-    const web3 = new Web3(job.data.sourceRpcURL);
+    const web3 = new Web3(
+      rpcNodeService.getRpcNodeByChainId(job.data.sourceChainId).url
+    );
     const destinationAmountToMachine = await getDestinationAmount(decodedData);
     let txData = await signatureService.getDataForSignature(
       job,
@@ -110,8 +112,9 @@ export const getLogsFromTransactionReceipt = (job: any) => {
     }
 
     if (logDataAndTopic?.data && logDataAndTopic.topics) {
-      const web3 = new Web3(job.data.sourceRpcURL);
-
+      const web3 = new Web3(
+        rpcNodeService.getRpcNodeByChainId(job.data.sourceChainId).url
+      );
       const decodedLog = web3.eth.abi.decodeLog(
         swapEventInputs as any,
         logDataAndTopic.data,

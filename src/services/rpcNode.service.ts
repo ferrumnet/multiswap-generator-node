@@ -1,29 +1,20 @@
 import { RpcNode } from "../interfaces/index";
-import { getRpcNodes } from "./axios.service";
-let rpcNodes: [RpcNode];
+import { setRpcNodesData, getRpcNodesData } from "../constants/constants";
 
 export async function saveRpcNodes(data: [RpcNode]) {
   setRpcNodesData(data);
-  getRpcNodes();
 }
 
-const setRpcNodesData = function (data: [RpcNode]) {
-  rpcNodes = data;
-};
-
-export const getRpcNodesData = function () {
-  return rpcNodes;
-};
-
 export const getRpcNodeByChainId = function (chainId: string): RpcNode {
+  let rpcNodes: any = getRpcNodesData();
+  let data = { chainId: chainId, url: "" };
   try {
     if (rpcNodes && rpcNodes.length) {
-      return (global as any).rpcNodes.find(
-        (item: any) => item.chainId === chainId
-      );
+      let item = rpcNodes.find((item: any) => item.chainId === chainId);
+      return item ? item : data;
     }
   } catch (e) {
     console.log(e);
   }
-  return { chainId: chainId, url: "" };
+  return data;
 };

@@ -2,7 +2,6 @@ import { Transaction, TransactionReceipt } from "../interfaces";
 
 export interface JobRequestBody {
   name: string;
-  sourceRpcURL: string;
   isSourceNonEVM: boolean;
   destinationRpcURL: string;
   isDestinationNonEVM: boolean;
@@ -16,7 +15,7 @@ export interface JobRequestBody {
   sourceOneInchData: string;
   destinationOneInchData: string;
   targetToken: string;
-  courceChainId: string;
+  sourceChainId: string;
   destinationChaibId: string;
 }
 
