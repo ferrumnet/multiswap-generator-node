@@ -41,3 +41,24 @@ export const updateTransaction = async (txHash: string, body: any) => {
     config
   );
 };
+
+export let getRpcNodes = async function () {
+  try {
+    let baseUrl = (global as any as any).AWS_ENVIRONMENT
+      .BASE_URL_MULTISWAP_BACKEND;
+    if (process.env.ENVIRONMENT == "local") {
+      baseUrl = "http://localhost:8080";
+    }
+    let config = {
+      headers: {
+        Authorization: BEARER + createAuthTokenForMultiswapBackend(),
+      },
+    };
+    let url = `${baseUrl}/api/v1/rpcNodes/list?address=${(global as any as any).AWS_ENVIRONMENT.PUBLIC_ADDRESS}&type=generator&isPagination=false`;
+    let res = await axios.get(url, config);
+    return res.data.body.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
