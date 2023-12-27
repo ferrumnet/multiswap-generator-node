@@ -1,5 +1,5 @@
 import { axiosService, web3Service } from "./index";
-import { removeTransactionHashFromLocalList } from "../utils/crons/transactionsJob";
+import { removeTransactionHashFromLocalList } from "../crons/transactions.job";
 import { JobRequestBody } from "../interfaces/index";
 import { getThreshold } from "../constants/constants";
 
@@ -13,7 +13,6 @@ export async function fetchChainDataFromNetwork(tx: any) {
 
     let data: JobRequestBody = {
       name: "",
-      sourceRpcURL: sourceRpc,
       isSourceNonEVM: sourceNetwork.isNonEVM,
       destinationRpcURL: destinationRpc,
       isDestinationNonEVM: destinationNetwork.isNonEVM,
@@ -26,6 +25,9 @@ export async function fetchChainDataFromNetwork(tx: any) {
       destinationAmountOut: tx.destinationAmountOut,
       sourceOneInchData: tx.sourceOneInchData,
       destinationOneInchData: tx.destinationOneInchData,
+      targetToken: tx.destinationCabn.tokenContractAddress,
+      sourceChainId: sourceNetwork.chainId,
+      destinationChaibId: destinationNetwork.chainId,
     };
 
     let job: any = { data: data };
@@ -38,7 +40,7 @@ export async function fetchChainDataFromNetwork(tx: any) {
       console.log("====================== source is EVM");
       job.returnvalue = await web3Service.getTransactionReceipt(
         job.data.txId,
-        job.data.sourceRpcURL,
+        job.data.sourceChainId,
         getThreshold(job.data.threshold)
       );
     }
@@ -67,7 +69,7 @@ async function createSignature(job: any) {
       console.log("decodedData", decodedData);
       tx = await web3Service.getTransactionByHash(
         job.data.txId,
-        job.data.sourceRpcURL
+        job.data.sourceChainId
       );
     }
 
@@ -90,7 +92,7 @@ async function createSignature(job: any) {
 
 async function updateTransaction(job: any, signedData: any, tx: any) {
   try {
-    console.log("signedData", job.returnvalue.status, signedData);
+    console.log("signedData", job?.returnvalue?.status, signedData);
     await axiosService.updateTransaction(job?.data?.txId, {
       signedData,
       transaction: tx,
