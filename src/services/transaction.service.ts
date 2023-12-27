@@ -1,5 +1,5 @@
 import { axiosService, web3Service } from "./index";
-import { removeTransactionHashFromLocalList } from "../utils/crons/transactionsJob";
+import { removeTransactionHashFromLocalList } from "../crons/transactionsJob";
 import { JobRequestBody } from "../interfaces/index";
 import { getThreshold } from "../constants/constants";
 

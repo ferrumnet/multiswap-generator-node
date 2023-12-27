@@ -1,7 +1,7 @@
 export {};
 var cron = require("node-cron");
 import moment from "moment";
-import { axiosService, transactionService } from "./../../services/index";
+import { axiosService, transactionService } from "./../services/index";
 let isProccessRunning = false;
 let localTransactionHashes: any = [];
 
