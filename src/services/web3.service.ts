@@ -22,7 +22,7 @@ export const getTransactionReceipt = async (
       console.log("i am here 1");
       await delay();
       console.log("i am here 2");
-      await getTransactionReceipt(txId, chainId, threshold, tries);
+      return await getTransactionReceipt(txId, chainId, threshold, tries);
     }
   }
   return transaction;

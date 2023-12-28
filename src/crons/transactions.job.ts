@@ -47,19 +47,16 @@ export function handleJob(transaction: any) {
 
 function addTransactionHashInLocalList(hash: any) {
   localTransactionHashes?.push(hash);
-  console.log(localTransactionHashes?.length);
 }
 
 export function removeTransactionHashFromLocalList(hash: any) {
   localTransactionHashes = localTransactionHashes?.filter(
     (item: string) => item !== hash
   );
-  console.log(localTransactionHashes?.length);
 }
 
 function isHashInLocalList(hash: any): boolean {
   const found = localTransactionHashes?.find((item: any) => item == hash);
-  console.log(found);
   if (found) {
     return true;
   } else {
