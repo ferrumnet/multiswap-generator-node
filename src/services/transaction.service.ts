@@ -28,6 +28,7 @@ export async function fetchChainDataFromNetwork(tx: any) {
       targetToken: tx.destinationCabn.tokenContractAddress,
       sourceChainId: sourceNetwork.chainId,
       destinationChaibId: destinationNetwork.chainId,
+      slippage: tx.slippage,
     };
 
     let job: any = { data: data };
@@ -82,7 +83,6 @@ async function createSignature(job: any) {
       signedData = await web3Service.signedTransaction(job, decodedData, tx);
     }
 
-    console.log("signedData", job.returnvalue.status, signedData);
     await updateTransaction(job, signedData, tx);
   } catch (error) {
     console.error("error occured", error);
