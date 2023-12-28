@@ -158,20 +158,9 @@ export const getFiberRouterAddress = (chainId: string) => {
   return "";
 };
 
-export const getFoundaryTokenAddress = (
-  sourceChainId: string,
-  targetChainId: string,
-  targetAddress: string
-) => {
-  if (sourceChainId == CUDOS_CHAIN_ID) {
-    if (NETWORKS && NETWORKS.length > 0) {
-      let item = NETWORKS.find((item: any) => item.chainId === targetChainId);
-      return item ? item.foundaryTokenAddress : "";
-    }
-    return "";
-  } else {
-    return targetAddress;
-  }
+export const getFoundaryTokenAddress = (chainId: string) => {
+  let item = NETWORKS.find((item: any) => item.chainId === chainId);
+  return item ? item.foundaryTokenAddress : "";
 };
 
 const getDestinationAmount = async (data: any) => {
