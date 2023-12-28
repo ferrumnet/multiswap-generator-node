@@ -44,7 +44,7 @@ export async function fetchChainDataFromNetwork(tx: any) {
         getThreshold(job.data.threshold)
       );
     }
-
+    console.log("transaction status", job?.returnvalue?.status);
     if (job?.returnvalue?.status == true) {
       await createSignature(job);
     } else {

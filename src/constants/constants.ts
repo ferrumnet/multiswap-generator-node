@@ -103,7 +103,7 @@ export const decrypt = function (data: string, key: string) {
     var originalText = bytes.toString(CryptoJS.enc.Utf8);
     return originalText;
   } catch (e) {
-    console.log("decrypt error", e);
+    console.log(e);
     return "";
   }
 };
