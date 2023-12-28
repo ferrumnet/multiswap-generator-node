@@ -19,13 +19,11 @@ export const getTransactionReceipt = async (
   if (tries < threshold) {
     tries += 1;
     if (!transaction || transaction === null || transaction.status === null) {
-      console.log("i am here 1");
       await delay();
-      console.log("i am here 2");
       await getTransactionReceipt(txId, chainId, threshold, tries);
     }
   }
-  return transaction;
+  return await web3.eth.getTransactionReceipt(txId);
 };
 
 export const getTransactionByHash = async (
