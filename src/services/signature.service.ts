@@ -109,10 +109,8 @@ export const isValidSettledAmount = async (
   );
   settledAmount = decimalsIntoNumber(settledAmount, sDecimal);
   destinationAmountIn = decimalsIntoNumber(destinationAmountIn, dDecimal);
-  let minValue = withSlippage(destinationAmountIn, slippage);
-  let maxValue = destinationAmountIn;
-  console.log(minValue, settledAmount, maxValue);
-  if (settledAmount >= minValue && settledAmount <= maxValue) {
+  console.log(settledAmount, destinationAmountIn);
+  if (settledAmount >= destinationAmountIn) {
     return true;
   }
   return false;
