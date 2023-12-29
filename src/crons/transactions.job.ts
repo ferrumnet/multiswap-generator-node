@@ -13,9 +13,7 @@ export let transactionsJob = async function () {
 async function start() {
   try {
     let task = cron.schedule("*/10 * * * * *", async () => {
-      console.log(moment().utc(), "::: transaction");
       if (!isProccessRunning && getRpcNodesData()?.length > 0) {
-        console.log("getTransaction cron triggered:::");
         triggerJobs();
       }
     });

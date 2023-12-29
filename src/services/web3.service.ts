@@ -164,7 +164,6 @@ export const getFoundaryTokenAddress = (chainId: string) => {
 };
 
 const getDestinationAmount = async (data: any) => {
-  console.log("data.bridgeAmount", data.swapBridgeAmount);
   return data.swapBridgeAmount;
 };
 

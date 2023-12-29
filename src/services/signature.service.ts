@@ -65,16 +65,6 @@ export const getValidWithdrawalData = async (
       data.sourceAssetType +
       data.destinationAssetType
   );
-  console.log(
-    "data",
-    data.destinationAmountIn,
-    data.destinationAmountOut,
-    data.sourceAssetType,
-    data.destinationAssetType,
-    decodedData.settledAmount
-  );
-  console.log("latestHash", latestHash);
-  console.log("withdrawlDataHash", decodedData.withdrawalData);
   if (
     latestHash == decodedData.withdrawalData &&
     (await isValidSettledAmount(
@@ -105,13 +95,6 @@ export const isValidSettledAmount = async (
   destinationAmountIn: any,
   settledAmount: any
 ): Promise<boolean> => {
-  console.log(
-    slippage,
-    sourceChainId,
-    destinationChainId,
-    destinationAmountIn,
-    settledAmount
-  );
   const sWeb3 = new Web3(rpcNodeService.getRpcNodeByChainId(sourceChainId).url);
   const dWeb3 = new Web3(
     rpcNodeService.getRpcNodeByChainId(destinationChainId).url

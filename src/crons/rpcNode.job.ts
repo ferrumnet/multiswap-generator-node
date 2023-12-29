@@ -11,7 +11,6 @@ export let rpcNodeJob = async function () {
 async function start() {
   try {
     let task = cron.schedule("*/10 * * * * *", async () => {
-      console.log(moment().utc(), "::: crone");
       triggerJobs();
     });
 
