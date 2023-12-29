@@ -38,7 +38,6 @@ export async function fetchChainDataFromNetwork(tx: any) {
       //   job.data.sourceRpcURL
       // );
     } else {
-      console.log("====================== source is EVM");
       job.returnvalue = await web3Service.getTransactionReceipt(
         job.data.txId,
         job.data.sourceChainId,
@@ -66,7 +65,6 @@ async function createSignature(job: any) {
       // tx.hash = job.returnvalue.transactionHash;
     } else {
       decodedData = web3Service.getLogsFromTransactionReceipt(job);
-      console.log("decodedData", decodedData);
       tx = await web3Service.getTransactionByHash(
         job.data.txId,
         job.data.sourceChainId
@@ -91,7 +89,6 @@ async function createSignature(job: any) {
 
 async function updateTransaction(job: any, signedData: any, tx: any) {
   try {
-    console.log("signedData", job?.returnvalue?.status, signedData);
     await axiosService.updateTransaction(job?.data?.txId, {
       signedData,
       transaction: tx,

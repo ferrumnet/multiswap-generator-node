@@ -84,7 +84,6 @@ const createSignedPayment = async (
     amount,
     salt
   );
-  console.log("hash", payBySig.hash);
   const privateKey = getPrivateKey();
   let provider = ethers.getDefaultProvider(job.data.sourceRpcURL);
   const wallet = new Wallet(privateKey, provider);
@@ -155,6 +154,5 @@ export const filterLogsAndGetValue = (logs: any, key: string) => {
 };
 
 const getDestinationAmount = async (data: any) => {
-  console.log("data.bridgeAmount", data.swapBridgeAmount);
   return data.swapBridgeAmount;
 };
