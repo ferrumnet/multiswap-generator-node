@@ -1,4 +1,5 @@
 import Web3 from "web3";
+const { Big } = require("big.js");
 import { web3Service, rpcNodeService } from "./index";
 import {
   NAME,
@@ -17,6 +18,7 @@ export const getDataForSignature = async (
   transaction: any
 ): Promise<any> => {
   const withdrawalData = await getValidWithdrawalData(job.data, decodedData);
+  console.log(withdrawalData);
   const txData = {
     transactionHash: job.returnvalue.transactionHash,
     from: transaction.from,
@@ -110,7 +112,7 @@ export const isValidSettledAmount = async (
   settledAmount = decimalsIntoNumber(settledAmount, sDecimal);
   destinationAmountIn = decimalsIntoNumber(destinationAmountIn, dDecimal);
   console.log(settledAmount, destinationAmountIn);
-  if (settledAmount >= destinationAmountIn) {
+  if (Big(settledAmount).gte(Big(destinationAmountIn))) {
     return true;
   }
   return false;
