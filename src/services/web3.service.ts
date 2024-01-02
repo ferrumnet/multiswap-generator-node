@@ -77,6 +77,7 @@ export const signedTransaction = async (
           hash: signature.hash,
         },
       ],
+      address: (global as any).AWS_ENVIRONMENT.PUBLIC_KEY,
     };
   } catch (error) {
     console.error("Error occured while decoding transaction", error);
