@@ -60,7 +60,7 @@ export let getRpcNodes = async function () {
     };
     let url = `${baseUrl}/api/v1/rpcNodes/list?address=${
       (global as any as any).AWS_ENVIRONMENT.PUBLIC_KEY
-    }&type=generator&isPagination=false`;
+    }&nodeType=generator&isPagination=false`;
     let res = await axios.get(url, config);
     return res.data.body.data;
   } catch (error) {
