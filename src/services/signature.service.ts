@@ -32,7 +32,7 @@ export const getDataForSignature = async (
     ),
     chainId: decodedData.sourceChainId,
     targetChainId: decodedData.targetChainId,
-    targetToken: job.data.targetToken,
+    targetToken: decodedData.targetToken,
     sourceFoundaryToken: web3Service.getFoundaryTokenAddress(
       decodedData.sourceChainId
     ),

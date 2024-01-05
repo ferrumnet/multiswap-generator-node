@@ -25,7 +25,7 @@ export async function fetchChainDataFromNetwork(tx: any) {
       destinationAmountOut: tx.destinationAmountOut,
       sourceOneInchData: tx.sourceOneInchData,
       destinationOneInchData: tx.destinationOneInchData,
-      targetToken: tx.destinationCabn.tokenContractAddress,
+      targetToken: "",
       sourceChainId: sourceNetwork.chainId,
       destinationChaibId: destinationNetwork.chainId,
       slippage: tx.slippage,
@@ -89,6 +89,7 @@ async function createSignature(job: any) {
 
 async function updateTransaction(job: any, signedData: any, tx: any) {
   try {
+    console.log("signedData", signedData);
     await axiosService.updateTransaction(job?.data?.txId, {
       signedData,
       transaction: tx,
