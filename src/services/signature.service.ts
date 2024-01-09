@@ -39,6 +39,7 @@ export const getDataForSignature = async (
     targetFoundaryToken: web3Service.getFoundaryTokenAddress(
       decodedData.targetChainId
     ),
+    sourceAddress: decodedData.sourceAddress,
     targetAddress: decodedData.targetAddress,
     signatures: [],
     salt: "",
@@ -281,4 +282,36 @@ const fixSig = (sig: any) => {
     v = "1c";
   }
   return rs + v;
+};
+
+export const getDataForSalt = (txData: any, decodedData: any): string => {
+  try {
+    console.log("decodedData here", decodedData);
+    return (
+      txData.transactionHash.toLocaleLowerCase() +
+      getDecodedLogsDataIntoString(decodedData)
+    );
+  } catch (e) {
+    console.log(e);
+  }
+  return "";
+};
+
+const getDecodedLogsDataIntoString = (decodedData: any): string => {
+  try {
+    return (
+      decodedData?.sourceToken +
+      decodedData?.targetToken +
+      decodedData?.sourceChainId +
+      decodedData?.targetChainId +
+      decodedData?.sourceAmount +
+      decodedData?.sourceAddress +
+      decodedData?.targetAddress +
+      decodedData?.settledAmount +
+      decodedData?.withdrawalData
+    );
+  } catch (e) {
+    console.log(e);
+  }
+  return "";
 };
