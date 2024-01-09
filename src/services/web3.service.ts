@@ -1,9 +1,8 @@
 import Web3 from "web3";
 import { TransactionReceipt, Transaction } from "../interfaces";
-import { signatureService } from "./index";
 import { abi as contractABI } from "../constants/FiberRouter.json";
 import { NETWORKS, CUDOS_CHAIN_ID } from "../constants/constants";
-import { rpcNodeService } from "../services/index";
+import { rpcNodeService, signatureService } from "../services/index";
 
 export const getTransactionReceipt = async (
   txId: string,
@@ -23,7 +22,11 @@ export const getTransactionReceipt = async (
       await getTransactionReceipt(txId, chainId, threshold, tries);
     }
   }
-  return await web3.eth.getTransactionReceipt(txId);
+  return await checkValidTransactionAndReturnReceipt(
+    txId,
+    chainId,
+    await web3.eth.getTransactionReceipt(txId)
+  );
 };
 
 export const getTransactionByHash = async (
@@ -50,7 +53,7 @@ export const signedTransaction = async (
     );
 
     txData.salt = Web3.utils.keccak256(
-      txData.transactionHash.toLocaleLowerCase()
+      signatureService.getDataForSalt(txData, decodedData)
     );
 
     const signature = signatureService.createSignedPayment(
@@ -166,6 +169,24 @@ export const getFoundaryTokenAddress = (chainId: string) => {
 
 const getDestinationAmount = async (data: any) => {
   return data.swapBridgeAmount;
+};
+
+export const checkValidTransactionAndReturnReceipt = async (
+  txId: string,
+  chainId: string,
+  receipt: TransactionReceipt
+): Promise<any> => {
+  let transaction = await getTransactionByHash(txId, chainId);
+  if (
+    transaction &&
+    transaction.to &&
+    receipt &&
+    transaction.to.toLowerCase() == getFiberRouterAddress(chainId).toLowerCase()
+  ) {
+    console.log("transaction to address", transaction?.to, receipt?.status);
+    return receipt;
+  }
+  return null;
 };
 
 const delay = () => new Promise((res) => setTimeout(res, 30000));
