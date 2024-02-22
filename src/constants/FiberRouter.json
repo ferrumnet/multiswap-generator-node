@@ -368,6 +368,41 @@
       "type": "function"
     },
     {
+      "inputs": [
+        { "internalType": "address", "name": "token", "type": "address" },
+        { "internalType": "address", "name": "payee", "type": "address" },
+        { "internalType": "uint256", "name": "amount", "type": "uint256" },
+        { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
+        { "internalType": "uint256", "name": "expiry", "type": "uint256" },
+        { "internalType": "bytes", "name": "multiSignature", "type": "bytes" }
+      ],
+      "name": "estimateGasForWithdrawSigned",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address payable", "name": "to", "type": "address" },
+        { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+        { "internalType": "uint256", "name": "amountOut", "type": "uint256" },
+        {
+          "internalType": "address",
+          "name": "foundryToken",
+          "type": "address"
+        },
+        { "internalType": "address", "name": "targetToken", "type": "address" },
+        { "internalType": "bytes", "name": "oneInchData", "type": "bytes" },
+        { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
+        { "internalType": "uint256", "name": "expiry", "type": "uint256" },
+        { "internalType": "bytes", "name": "multiSignature", "type": "bytes" }
+      ],
+      "name": "estimateGasForWithdrawSignedAndSwapOneInch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "gasWallet",
       "outputs": [
@@ -603,6 +638,41 @@
         { "internalType": "bytes", "name": "multiSignature", "type": "bytes" }
       ],
       "name": "withdrawSignedAndSwapOneInch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address payable", "name": "to", "type": "address" },
+        { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+        { "internalType": "uint256", "name": "amountOut", "type": "uint256" },
+        {
+          "internalType": "address",
+          "name": "foundryToken",
+          "type": "address"
+        },
+        { "internalType": "address", "name": "targetToken", "type": "address" },
+        { "internalType": "bytes", "name": "oneInchData", "type": "bytes" },
+        { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
+        { "internalType": "uint256", "name": "expiry", "type": "uint256" },
+        { "internalType": "bytes", "name": "multiSignature", "type": "bytes" }
+      ],
+      "name": "withdrawSignedAndSwapOneInchForGasEstimation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "token", "type": "address" },
+        { "internalType": "address", "name": "payee", "type": "address" },
+        { "internalType": "uint256", "name": "amount", "type": "uint256" },
+        { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
+        { "internalType": "uint256", "name": "expiry", "type": "uint256" },
+        { "internalType": "bytes", "name": "multiSignature", "type": "bytes" }
+      ],
+      "name": "withdrawSignedForGasEstimation",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
