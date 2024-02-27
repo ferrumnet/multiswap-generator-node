@@ -13,6 +13,12 @@ export const BEARER = "Bearer ";
 let rpcNodes: [RpcNode];
 export const NETWORKS = [
   {
+    chainId: "1",
+    fundManagerAddress: "0x985824b8623e523162122461e081721b4bcc778b",
+    fiberRouterAddress: "0x7FfD92b850c5660FB40BD5Efa4f24eb22665E4c4",
+    foundaryTokenAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  },
+  {
     chainId: "56",
     fundManagerAddress: "0xaD8E49Eaa711905A4e3c12A49e44485330982e0F",
     fiberRouterAddress: "0xc56f2a1240f2aDfAc3c822D564260a524d059e0d",
