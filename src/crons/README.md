@@ -1,11 +1,6 @@
 # index.ts
 
-The `index.ts` file within the `src/crons` directory of the `ferrumnet/multiswap-generator-node` repository serves as a central point for exporting cron job modules. This file essentially organizes and makes accessible the cron jobs defined in the project for periodic tasks. Here is the documentation for each function and export found in this file:
-
-Overview
---------
-
-The file `src/crons/index.ts` acts as an aggregator of cron jobs within the multiswap generator node application. It exports job modules defined in separate files, making them accessible for the application to schedule and execute these jobs at specified intervals
+The `index.ts` file within the `src/crons` directory of the `ferrumnet/multiswap-generator-node` repository serves as a central point for exporting cron job modules. This file essentially organizes and makes accessible the cron jobs defined in the project for periodic tasks.
 
 rpcNode.job.ts
 ============================
