@@ -212,3 +212,45 @@ The functions interact with various services (`web3Service`, `cosmWasmService`, 
 
 # web3.service.ts
 
+Here are detailed documentations for each function found in the `web3.service.ts` file from the repository:
+
+### `getTransactionReceipt(txId: string, chainId: string, threshold: number, tries = 0): Promise<TransactionReceipt>`
+
+This asynchronous function retrieves a transaction receipt given a transaction ID and a chain ID. It makes recursive calls up to a specified threshold if the transaction receipt is not initially retrieved or if it lacks a status. It utilizes a delay between retries.
+
+### `getTransactionByHash(txHash: string, chainId: string): Promise<Transaction>`
+
+Given a transaction hash and a chain ID, this asynchronous function fetches the transaction details using Web3.
+
+### `signedTransaction(job: any, decodedData: any, transaction: any): Promise<any>`
+
+This function handles the process of signing a transaction. It constructs transaction data, calculates a hash (salt), and creates a signed payment transaction. The function expects a job object, decoded data, and the transaction data, returning a structured object with the transaction details and signatures.
+
+### `getLogsFromTransactionReceipt(job: any)`
+
+Extracts and decodes logs from a transaction receipt. This function searches through log entries for specific event topics related to swaps and decodes them if found.
+
+### `findSwapEvent(topics: any[], job: any)`
+
+A helper function that searches for a swap event hash in a list of topics. It returns the index of the swap event hash if found or `undefined` otherwise.
+
+### `getFundManagerAddress(chainId: string)`
+
+Retrieves the address of the fund manager for a given chain ID by searching through a predefined list of networks.
+
+### `getFiberRouterAddress(chainId: string)`
+
+Retrieves the address of the Fiber Router for a given chain ID by searching through a predefined list of networks.
+
+### `getFoundaryTokenAddress(chainId: string)`
+
+Fetches the address of the Foundary Token for a specific chain ID from a list of known networks.
+
+### `checkValidTransactionAndReturnReceipt(txId: string, chainId: string, receipt: TransactionReceipt): Promise<any>`
+
+Checks if a given transaction is valid by comparing its destination address to the Fiber Router address for a given chain ID. If valid, it returns the receipt; otherwise, it returns null.
+
+### `delay()`
+
+A utility function that introduces a delay, primarily used for throttling requests or retries in functions.
+
