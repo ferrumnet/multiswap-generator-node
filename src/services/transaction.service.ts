@@ -29,6 +29,10 @@ export async function fetchChainDataFromNetwork(tx: any) {
       sourceChainId: sourceNetwork.chainId,
       destinationChaibId: destinationNetwork.chainId,
       slippage: tx.slippage,
+      isSameNetworkSwap: isSameNetworksSwap(
+        sourceNetwork.chainId,
+        destinationNetwork.chainId
+      ),
     };
 
     let job: any = { data: data };
@@ -44,7 +48,11 @@ export async function fetchChainDataFromNetwork(tx: any) {
         getThreshold(job.data.threshold)
       );
     }
-    if (job?.returnvalue?.status == true) {
+    if (job?.returnvalue?.status == true && job.data.isSameNetworkSwap) {
+      let decodedData: any = web3Service.getLogsFromTransactionReceipt(job);
+      decodedData.isSameNetworkSwap = job.data.isSameNetworkSwap;
+      await updateTransaction(job, { ...decodedData }, null);
+    } else if (job?.returnvalue?.status == true) {
       await createSignature(job);
     } else {
       console.info(`failed!`);
@@ -98,5 +106,16 @@ async function updateTransaction(job: any, signedData: any, tx: any) {
     removeTransactionHashFromLocalList(job?.data?.txId);
   } catch (error) {
     console.error("error occured", error);
+  }
+}
+
+function isSameNetworksSwap(
+  sourceNetworkChainId: string,
+  destinationNetworkChainId: string
+): boolean {
+  if (sourceNetworkChainId == destinationNetworkChainId) {
+    return true;
+  } else {
+    return false;
   }
 }
