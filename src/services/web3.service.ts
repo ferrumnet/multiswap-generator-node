@@ -108,6 +108,12 @@ export const getLogsFromTransactionReceipt = (job: any) => {
       (abi) => abi.name === "Swap" && abi.type === "event"
     )?.inputs;
 
+    if (job.data.isSameNetworkSwap) {
+      swapEventInputs = contractABI.find(
+        (abi) => abi.name === "SwapSameNetwork" && abi.type === "event"
+      )?.inputs;
+    }
+
     if (job.data.isDestinationNonEVM != null && job.data.isDestinationNonEVM) {
       swapEventInputs = contractABI.find(
         (abi) => abi.name === "NonEvmSwap" && abi.type === "event"
@@ -133,6 +139,11 @@ const findSwapEvent = (topics: any[], job: any) => {
   let swapEventHash = Web3.utils.sha3(
     "Swap(address,address,uint256,uint256,uint256,address,address,uint256,bytes32,uint256)"
   );
+  if (job.data.isSameNetworkSwap) {
+    swapEventHash = Web3.utils.sha3(
+      "SwapSameNetwork(address,address,uint256,uint256,address,address)"
+    );
+  }
   if (job.data.isDestinationNonEVM != null && job.data.isDestinationNonEVM) {
     swapEventHash = Web3.utils.sha3(
       "NonEvmSwap(address,string,uint256,string,uint256,address,string)"
