@@ -69,7 +69,8 @@ export const signedTransaction = async (
       txData.targetFoundaryToken,
       txData.destinationOneInchData,
       txData.expiry,
-      web3
+      web3,
+      txData.aggregateRouterContractAddress
     );
 
     return {
@@ -176,6 +177,11 @@ export const getFiberRouterAddress = (chainId: string) => {
 export const getFoundaryTokenAddress = (chainId: string) => {
   let item = NETWORKS.find((item: any) => item.chainId === chainId);
   return item ? item.foundaryTokenAddress : "";
+};
+
+export const getAggregateRouterTokenAddress = (chainId: string) => {
+  let item = NETWORKS.find((item: any) => item.chainId === chainId);
+  return item ? item.aggregateRouterContractAddress : "";
 };
 
 const getDestinationAmount = async (data: any) => {
