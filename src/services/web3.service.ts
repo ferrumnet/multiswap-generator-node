@@ -206,4 +206,4 @@ export const checkValidTransactionAndReturnReceipt = async (
   return null;
 };
 
-const delay = () => new Promise((res) => setTimeout(res, 30000));
+const delay = () => new Promise((res) => setTimeout(res, 15000));
