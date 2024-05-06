@@ -3,7 +3,7 @@ import { RpcNode } from "../interfaces/index";
 var crypto = require("crypto");
 var CryptoJS = require("crypto-js");
 
-export const NAME = "CCTP_FUND_MANAGER";
+export const NAME = "FUND_MANAGER";
 export const VERSION = "000.004";
 export const CUDOS_CHAIN_ID = "cudos-1";
 export const FOUNDARY = "Foundary";
@@ -34,7 +34,7 @@ export const NETWORKS = [
     foundaryTokenAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     aggregateRouterContractAddress:
       "0x111111125421ca6dc452d289314280a0f8842a65",
-    cctpFundManager: "0x5D414D40cEc9A9d81877FB8eeB218Cc577271941",
+    cctpFundManager: "0x98E4F18F63Cb0B815ad7C6DdFfAfbabb54550a0e",
   },
   {
     chainId: "10",
@@ -57,7 +57,7 @@ export const NETWORKS = [
     foundaryTokenAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     aggregateRouterContractAddress:
       "0x111111125421ca6dc452d289314280a0f8842a65",
-    cctpFundManager: "0x8EcDf548e4daB7ecB611Ed39cA62ff36Ebc52d73",
+    cctpFundManager: "0xd0e48dDf333a3c445aC2391153991851045E8162",
   },
   {
     chainId: "324",
