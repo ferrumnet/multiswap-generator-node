@@ -88,6 +88,23 @@ export const signedTransaction = async (
   }
 };
 
+export const getCCTPLogsFromTransactionReceipt = (job: any) => {
+  try {
+    let receipt = job?.returnvalue;
+    const web3 = new Web3(
+      rpcNodeService.getRpcNodeByChainId(job.data.sourceChainId).url
+    );
+    const eventTopic = web3.utils.keccak256("MessageSent(bytes)");
+    const log = receipt.logs.find((l: any) => l.topics[0] === eventTopic);
+    const messageBytes = web3.eth.abi.decodeParameters(["bytes"], log.data)[0];
+    const messageHash = web3.utils.keccak256(messageBytes);
+    console.log("messageBytes", messageBytes, "messageHash", messageHash);
+    return { messageBytes, messageHash };
+  } catch (e: any) {
+    console.log(e);
+  }
+};
+
 export const getLogsFromTransactionReceipt = (job: any) => {
   let logDataAndTopic = undefined;
 
@@ -104,23 +121,14 @@ export const getLogsFromTransactionReceipt = (job: any) => {
         }
       }
     }
-
     let swapEventInputs = contractABI.find(
       (abi) => abi.name === "Swap" && abi.type === "event"
     )?.inputs;
-
     if (job.data.isSameNetworkSwap) {
       swapEventInputs = contractABI.find(
         (abi) => abi.name === "SwapSameNetwork" && abi.type === "event"
       )?.inputs;
     }
-
-    if (job.data.isDestinationNonEVM != null && job.data.isDestinationNonEVM) {
-      swapEventInputs = contractABI.find(
-        (abi) => abi.name === "NonEvmSwap" && abi.type === "event"
-      )?.inputs;
-    }
-
     if (logDataAndTopic?.data && logDataAndTopic.topics) {
       const web3 = new Web3(
         rpcNodeService.getRpcNodeByChainId(job.data.sourceChainId).url
@@ -138,7 +146,7 @@ export const getLogsFromTransactionReceipt = (job: any) => {
 
 const findSwapEvent = (topics: any[], job: any) => {
   let swapEventHash = Web3.utils.sha3(
-    "Swap(address,address,uint256,uint256,uint256,address,address,uint256,bytes32,uint256)"
+    "Swap(address,address,uint256,uint256,uint256,address,address,uint256,bytes32,uint256,uint256)"
   );
   if (job.data.isSameNetworkSwap) {
     swapEventHash = Web3.utils.sha3(
@@ -158,10 +166,14 @@ const findSwapEvent = (topics: any[], job: any) => {
   }
 };
 
-export const getFundManagerAddress = (chainId: string) => {
+export const getFundManagerAddress = (chainId: string, isCCTP: boolean) => {
   if (NETWORKS && NETWORKS.length > 0) {
     let item = NETWORKS.find((item: any) => item.chainId === chainId);
-    return item ? item.fundManagerAddress : "";
+    if (isCCTP) {
+      return item ? item.cctpFundManager : "";
+    } else {
+      return item ? item.fundManagerAddress : "";
+    }
   }
   return "";
 };

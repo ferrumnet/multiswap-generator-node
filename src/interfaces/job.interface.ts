@@ -19,6 +19,7 @@ export interface JobRequestBody {
   destinationChaibId: string;
   slippage: number;
   isSameNetworkSwap: boolean;
+  isCCTP: boolean;
 }
 
 export interface UpdateJobRequestBody {
