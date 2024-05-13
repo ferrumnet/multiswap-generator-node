@@ -105,13 +105,16 @@ export const getCCTPLogsFromTransactionReceipt = (job: any) => {
   }
 };
 
-export const getLogsFromTransactionReceipt = (job: any) => {
+export const getLogsFromTransactionReceipt = (
+  job: any,
+  isDistributedFee = false
+) => {
   let logDataAndTopic = undefined;
 
   if (job?.returnvalue?.logs?.length) {
     for (const log of job.returnvalue.logs) {
       if (log?.topics?.length) {
-        const topicIndex = findSwapEvent(log.topics, job);
+        const topicIndex = findSwapEvent(log.topics, job, isDistributedFee);
         if (topicIndex !== undefined && topicIndex >= 0) {
           logDataAndTopic = {
             data: log.data,
@@ -129,6 +132,11 @@ export const getLogsFromTransactionReceipt = (job: any) => {
         (abi) => abi.name === "SwapSameNetwork" && abi.type === "event"
       )?.inputs;
     }
+    if (isDistributedFee) {
+      swapEventInputs = contractABI.find(
+        (abi) => abi.name === "FeesDistributed" && abi.type === "event"
+      )?.inputs;
+    }
     if (logDataAndTopic?.data && logDataAndTopic.topics) {
       const web3 = new Web3(
         rpcNodeService.getRpcNodeByChainId(job.data.sourceChainId).url
@@ -144,7 +152,7 @@ export const getLogsFromTransactionReceipt = (job: any) => {
   }
 };
 
-const findSwapEvent = (topics: any[], job: any) => {
+const findSwapEvent = (topics: any[], job: any, isDistributedFee: boolean) => {
   let swapEventHash = Web3.utils.sha3(
     "Swap(address,address,uint256,uint256,uint256,address,address,uint256,bytes32,uint256,uint256)"
   );
@@ -153,9 +161,9 @@ const findSwapEvent = (topics: any[], job: any) => {
       "SwapSameNetwork(address,address,uint256,uint256,address,address)"
     );
   }
-  if (job.data.isDestinationNonEVM != null && job.data.isDestinationNonEVM) {
+  if (isDistributedFee) {
     swapEventHash = Web3.utils.sha3(
-      "NonEvmSwap(address,string,uint256,string,uint256,address,string)"
+      "FeesDistributed(address,uint256,uint256,uint256)"
     );
   }
 

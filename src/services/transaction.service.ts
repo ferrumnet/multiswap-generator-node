@@ -72,8 +72,13 @@ async function createSignature(job: any) {
       job.data.sourceChainId
     );
     signedData = await web3Service.signedTransaction(job, decodedData, tx);
-    signedData = { ...signedData, cctpLogs };
-    await updateTransaction(job, signedData, tx);
+    if (signedData) {
+      signedData = { ...signedData, cctpLogs };
+      await updateTransaction(job, signedData, tx);
+    } else {
+      console.info(`createSignature failed!`);
+      await updateTransaction(job, null, null);
+    }
   } catch (error) {
     console.error("error occured", error);
   }
