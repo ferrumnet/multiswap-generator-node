@@ -336,14 +336,15 @@ const getDecodedLogsDataIntoString = (decodedData: any): string => {
 };
 
 const getDistributedFee = (job: any): string => {
+  let defaultValue = "0";
   try {
     let logs = web3Service.getLogsFromTransactionReceipt(job, true);
     if (logs) {
       console.log("getDistributedFee logs", logs);
-      return logs?.totalFee ? logs?.totalFee : "0";
+      return logs?.totalPlatformFee ? logs?.totalPlatformFee : defaultValue;
     }
   } catch (e) {
     console.log(e);
   }
-  return "0";
+  return defaultValue;
 };
