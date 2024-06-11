@@ -18,6 +18,8 @@ export interface JobRequestBody {
   sourceChainId: string;
   destinationChaibId: string;
   slippage: number;
+  isSameNetworkSwap: boolean;
+  isCCTP: boolean;
 }
 
 export interface UpdateJobRequestBody {
