@@ -69,7 +69,8 @@ export const signedTransaction = async (
       txData.targetFoundaryToken,
       txData.destinationOneInchData,
       txData.expiry,
-      web3
+      web3,
+      txData.aggregateRouterContractAddress
     );
 
     return {
@@ -87,13 +88,33 @@ export const signedTransaction = async (
   }
 };
 
-export const getLogsFromTransactionReceipt = (job: any) => {
+export const getCCTPLogsFromTransactionReceipt = (job: any) => {
+  try {
+    let receipt = job?.returnvalue;
+    const web3 = new Web3(
+      rpcNodeService.getRpcNodeByChainId(job.data.sourceChainId).url
+    );
+    const eventTopic = web3.utils.keccak256("MessageSent(bytes)");
+    const log = receipt.logs.find((l: any) => l.topics[0] === eventTopic);
+    const messageBytes = web3.eth.abi.decodeParameters(["bytes"], log.data)[0];
+    const messageHash = web3.utils.keccak256(messageBytes);
+    console.log("messageBytes", messageBytes, "messageHash", messageHash);
+    return { messageBytes, messageHash };
+  } catch (e: any) {
+    console.log(e);
+  }
+};
+
+export const getLogsFromTransactionReceipt = (
+  job: any,
+  isDistributedFee = false
+) => {
   let logDataAndTopic = undefined;
 
   if (job?.returnvalue?.logs?.length) {
     for (const log of job.returnvalue.logs) {
       if (log?.topics?.length) {
-        const topicIndex = findSwapEvent(log.topics, job);
+        const topicIndex = findSwapEvent(log.topics, job, isDistributedFee);
         if (topicIndex !== undefined && topicIndex >= 0) {
           logDataAndTopic = {
             data: log.data,
@@ -103,17 +124,19 @@ export const getLogsFromTransactionReceipt = (job: any) => {
         }
       }
     }
-
     let swapEventInputs = contractABI.find(
       (abi) => abi.name === "Swap" && abi.type === "event"
     )?.inputs;
-
-    if (job.data.isDestinationNonEVM != null && job.data.isDestinationNonEVM) {
+    if (job.data.isSameNetworkSwap) {
       swapEventInputs = contractABI.find(
-        (abi) => abi.name === "NonEvmSwap" && abi.type === "event"
+        (abi) => abi.name === "SwapSameNetwork" && abi.type === "event"
       )?.inputs;
     }
-
+    if (isDistributedFee) {
+      swapEventInputs = contractABI.find(
+        (abi) => abi.name === "FeesDistributed" && abi.type === "event"
+      )?.inputs;
+    }
     if (logDataAndTopic?.data && logDataAndTopic.topics) {
       const web3 = new Web3(
         rpcNodeService.getRpcNodeByChainId(job.data.sourceChainId).url
@@ -129,13 +152,18 @@ export const getLogsFromTransactionReceipt = (job: any) => {
   }
 };
 
-const findSwapEvent = (topics: any[], job: any) => {
+const findSwapEvent = (topics: any[], job: any, isDistributedFee: boolean) => {
   let swapEventHash = Web3.utils.sha3(
-    "Swap(address,address,uint256,uint256,uint256,address,address,uint256,bytes32,uint256)"
+    "Swap(address,address,uint256,uint256,uint256,address,address,uint256,bytes32,uint256,uint256)"
   );
-  if (job.data.isDestinationNonEVM != null && job.data.isDestinationNonEVM) {
+  if (job.data.isSameNetworkSwap) {
     swapEventHash = Web3.utils.sha3(
-      "NonEvmSwap(address,string,uint256,string,uint256,address,string)"
+      "SwapSameNetwork(address,address,uint256,uint256,address,address)"
+    );
+  }
+  if (isDistributedFee) {
+    swapEventHash = Web3.utils.sha3(
+      "FeesDistributed(address,uint256,uint256,uint256)"
     );
   }
 
@@ -146,10 +174,14 @@ const findSwapEvent = (topics: any[], job: any) => {
   }
 };
 
-export const getFundManagerAddress = (chainId: string) => {
+export const getFundManagerAddress = (chainId: string, isCCTP: boolean) => {
   if (NETWORKS && NETWORKS.length > 0) {
     let item = NETWORKS.find((item: any) => item.chainId === chainId);
-    return item ? item.fundManagerAddress : "";
+    if (isCCTP) {
+      return item ? item.cctpFundManager : "";
+    } else {
+      return item ? item.fundManagerAddress : "";
+    }
   }
   return "";
 };
@@ -165,6 +197,11 @@ export const getFiberRouterAddress = (chainId: string) => {
 export const getFoundaryTokenAddress = (chainId: string) => {
   let item = NETWORKS.find((item: any) => item.chainId === chainId);
   return item ? item.foundaryTokenAddress : "";
+};
+
+export const getAggregateRouterTokenAddress = (chainId: string) => {
+  let item = NETWORKS.find((item: any) => item.chainId === chainId);
+  return item ? item.aggregateRouterContractAddress : "";
 };
 
 const getDestinationAmount = async (data: any) => {
@@ -189,4 +226,4 @@ export const checkValidTransactionAndReturnReceipt = async (
   return null;
 };
 
-const delay = () => new Promise((res) => setTimeout(res, 30000));
+const delay = () => new Promise((res) => setTimeout(res, 15000));
